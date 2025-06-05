@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap");
+
+:root {
+    --bg: #f5e6d3;
+    --text-dark: #333;
+    --text-muted: #444;
+    --accent: #000;
+    --accent-hover: rgb(132, 144, 200);
+    --radius: 2px;
+}
+
+body {
+    font-family: "Lora", serif;
+    background-color: var(--bg);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    text-align: center;
+
+}
+
+h1 {
+    font-family: "Bungee", cursive;
+    font-size: 3.5rem;
+    color: var(--text-dark);
+    text-align: center;
+    margin: 0 0 40px 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+

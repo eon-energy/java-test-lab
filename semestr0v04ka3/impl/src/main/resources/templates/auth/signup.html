@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/auth.css}" rel="stylesheet">
+    <title>Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+    <h1>SIGN UP</h1>
+    <form th:action="@{/auth/signup}" method="post" th:object="${signUpRequest}" class="auth-form">
+
+        <div class="input-group">
+            <label>
+                <input type="text" th:field="*{username}" required placeholder=" "
+                       th:classappend="${#fields.hasErrors('username')} ? 'error-input'">
+                <span class="floating-label">Username</span>
+            </label>
+            <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            <div class="error-message" th:if="${error}" th:text="${error}"></div>
+        </div>
+
+        <div class="input-group">
+            <label>
+                <input type="password" th:field="*{password}" required placeholder=" "
+                       th:classappend="${#fields.hasErrors('password')} ? 'error-input'">
+                <span class="floating-label">Password</span>
+            </label>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+
+        <div class="input-group">
+            <label>
+                <input type="password" th:field="*{confirmationPassword}" required placeholder=" "
+                       th:classappend="${#fields.hasErrors('confirmationPassword')} ? 'error-input'">
+                <span class="floating-label">Confirm password</span>
+            </label>
+            <div class="error-message" th:if="${#fields.hasErrors('confirmationPassword')}"
+                 th:errors="*{confirmationPassword}"></div>
+        </div>
+
+        <button type="submit">Sign up</button>
+    </form>
+
+    <div class="login-link">
+        Already a member? <a href="/auth/signin"><strong>Sign In</strong></a>
+    </div>
+</body>
+</html>

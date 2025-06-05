@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<header class="site-header" th:fragment="header">
+    <div class="header-inner">
+        <a class="logo" th:href="@{/problems}">NE PRIDUMAl</a>
+
+        <nav class="header-links">
+            <a th:href="@{/problems}">Main</a>
+            <a th:href="@{/problems/create}">Create</a>
+        </nav>
+
+        <form th:action="@{/auth/logout}" method="post" class="logout-form">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+</header>
+</body>
+</html>

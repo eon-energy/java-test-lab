@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create Problem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css"/>
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/problem.css}" rel="stylesheet"/>
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+
+</head>
+<div th:replace="fragments/header :: header"></div>
+<body>
+<span class="viewport-offset" aria-hidden="true"></span>
+<nav class="nav-links"><a href="/">Home</a></nav>
+<div class="wrapper">
+    <div th:if="${error}" class="alert" th:text="${error} "></div>
+
+    <div class="error-message"></div>
+
+    <form th:action="@{/problems/create}" method="post" class="problem-create-form" th:object="${problemCreate}">
+        <div class="action-bar">
+            <button type="submit" class="btn-submit">Create</button>
+        </div>
+        <div class="panels-block">
+            <section class="panel panel-left">
+                <header class="tabs">
+                    <button type="button" class="tab active" data-pane="description">Description</button>
+                    <button type="button" class="tab" data-pane="settings">Settings</button>
+                    <button type="button" class="tab" data-pane="preview">Preview</button>
+                </header>
+                <main class="pane-container">
+                    <article class="pane active" id="description">
+                        <label for="description-field">Problem Description:</label>
+                        <textarea id="description-field" name="description" required
+                                  th:field="*{getDescription}"></textarea>
+                        <div class="error-msg" th:if="${#fields.hasErrors('descriptionMd')}"
+                             th:errors="*{getDescription}"></div>
+                    </article>
+                    <article class="pane" id="settings">
+                        <div class="settings-section">
+                            <label for="title">Problem Title:</label>
+                            <input id="title" name="title" maxlength="70" required th:field="*{title}"/>
+                            <div class="error-msg" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                        </div>
+                        <div class="settings-section">
+                            <label for="difficultyLevel">Difficulty Level:</label>
+                            <select id="difficultyLevel" name="difficultyLevel" required th:field="*{difficultyLevel}">
+                                <option value="">-- Select --</option>
+                                <option th:each="level : ${difficultyLevel}" th:value="${level.getName()}"
+                                        th:style="'background-color:' + ${level.color}"
+                                        th:text="${level.getName()}"  ></option>
+
+                            </select>
+                            <div class="error-msg" th:if="${#fields.hasErrors('difficultyLevel')}"
+                                 th:errors="*{difficultyLevel}"></div>
+                        </div>
+                        <div class="settings-section settings-row">
+                            <div>
+                                <label for="maxExecutionTimeMs">Max Time (ms):</label>
+                                <input type="number" id="maxExecutionTimeMs" name="maxExecutionTimeMs" min="100"
+                                       required th:field="*{maxExecutionTimeMs}"/>
+                                <div class="error-msg" th:if="${#fields.hasErrors('maxExecutionTimeMs')}"
+                                     th:errors="*{maxExecutionTimeMs}"></div>
+                            </div>
+                            <div>
+                                <label for="maxMemoryMB">Max Memory (MB):</label>
+                                <input type="number" id="maxMemoryMB" name="maxMemoryMB" min="10" required
+                                       th:field="*{getMaxMemoryUsedMb}"/>
+                                <div class="error-msg" th:if="${#fields.hasErrors('maxMemoryMB')}"
+                                     th:errors="*{getMaxMemoryUsedMb}"></div>
+                            </div>
+                        </div>
+                        <div class="settings-section type-toggle-container">
+                            <label>Type:</label>
+                            <input type="hidden" id="isPrivateHidden" name="isPrivate" th:field="*{personal}"/>
+                            <button type="button" id="toggle-type" class="type-toggle-btn">Public</button>
+                        </div>
+                    </article>
+                    <article class="pane" id="preview">
+                        <h2 style="font-family: 'Bungee', cursive; margin: 0 0 8px" id="preview-title">Problem
+                            Title</h2>
+                        <p style="font-family: 'Inter', sans-serif; font-weight: 600; margin: 0 0 12px">Difficulty:
+                            <span id="preview-difficulty">-</span></p>
+                        <p style="font-family: 'Inter', sans-serif; font-weight: 600; margin: 0 0 12px">Type: <span
+                                id="preview-type">Public</span></p>
+                        <div class="markdown-preview" id="markdown-preview"></div>
+                    </article>
+                </main>
+            </section>
+            <section class="panel panel-right">
+                <header class="tabs">
+                    <button type="button" class="tab active" data-pane="template">Solution Template</button>
+                    <button type="button" class="tab" data-pane="test">Solution Test</button>
+                </header>
+                <main class="pane-container">
+                    <article class="pane active" id="template">
+                        <p style="font: 600 1rem 'Inter', sans-serif; margin-bottom: 6px">Solution template provided to
+                            users</p>
+                        <textarea id="solutionTemplate" name="solutionTemplate"
+                                  th:field="*{solutionTemplate}"></textarea>
+                        <div class="error-msg" th:if="${#fields.hasErrors('solutionTemplate')}"
+                             th:errors="*{solutionTemplate}"></div>
+                    </article>
+                    <article class="pane" id="test">
+                        <p style="font: 600 1rem 'Inter', sans-serif; margin-bottom: 6px">Test cases for solution
+                            validation</p>
+                        <textarea id="solutionTest" name="solutionTest" th:field="*{solutionTest}"></textarea>
+                        <div class="error-msg" th:if="${#fields.hasErrors('solutionTest')}"
+                             th:errors="*{solutionTest}"></div>
+                    </article>
+                </main>
+            </section>
+        </div>
+    </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.tab').forEach(tabBtn => {
+            tabBtn.addEventListener('click', () => {
+                const panel = tabBtn.closest('.panel');
+                const targetId = tabBtn.dataset.pane;
+                panel.querySelectorAll('.tab').forEach(btn => btn.classList.toggle('active', btn === tabBtn));
+                panel.querySelectorAll('.pane').forEach(pane => pane.classList.toggle('active', pane.id === targetId));
+                if (targetId === 'template' && window.solutionTemplateEditor) window.solutionTemplateEditor.refresh();
+                if (targetId === 'test' && window.solutionTestEditor) window.solutionTestEditor.refresh();
+                if (targetId === 'preview') updatePreview();
+            });
+        });
+
+        const mde = new EasyMDE({
+            element: document.getElementById('description-field'),
+            spellChecker: false,
+            status: false,
+            toolbar: ['bold', 'italic', 'heading', '|', 'horizontal-rule', 'code', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', 'table', '|', 'guide'],
+            autoDownloadFontAwesome: false
+        });
+
+        const cmOpts = {mode: 'text/x-java', theme: 'material', lineNumbers: true, indentUnit: 4};
+        window.solutionTemplateEditor = CodeMirror.fromTextArea(document.getElementById('solutionTemplate'), cmOpts);
+        window.solutionTestEditor = CodeMirror.fromTextArea(document.getElementById('solutionTest'), cmOpts);
+
+        const typeBtn = document.getElementById('toggle-type');
+        const typeHidden = document.getElementById('isPrivateHidden');
+        const updateTypeBtn = () => {
+            const isPrivate = typeHidden.value === 'true';
+            typeBtn.textContent = isPrivate ? 'Private' : 'Public';
+            typeBtn.classList.toggle('private', isPrivate);
+        };
+        updateTypeBtn();
+        typeBtn.addEventListener('click', () => {
+            typeHidden.value = typeHidden.value === 'true' ? 'false' : 'true';
+            updateTypeBtn();
+            updatePreview();
+        });
+
+        function updatePreview() {
+            const previewEl = document.getElementById('markdown-preview');
+            previewEl.innerHTML = mde.options.previewRender(mde.value(), mde);
+            Prism.highlightAllUnder(previewEl);
+            document.getElementById('preview-title').textContent = document.getElementById('title').value || 'Problem Title';
+            document.getElementById('preview-difficulty').textContent = document.getElementById('difficultyLevel').value || '-';
+            document.getElementById('preview-type').textContent = typeHidden.value === 'true' ? 'Private' : 'Public';
+        }
+
+        mde.codemirror.on('change', updatePreview);
+        document.getElementById('title').addEventListener('input', updatePreview);
+        document.getElementById('difficultyLevel').addEventListener('change', updatePreview);
+        updatePreview();
+    });
+</script>
+</body>
+</html>

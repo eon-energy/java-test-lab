@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/auth.css}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+
+    <h1>SIGN IN</h1>
+    <form th:action="@{/auth/signin}" method="post" th:object="${signInRequest}" class="auth-form">
+
+        <div class="input-group">
+            <label>
+                <input type="text" th:field="*{username}" required placeholder=" "
+                       th:classappend="${#fields.hasErrors('username')} ? 'error-input'">
+                <span class="floating-label">Username</span>
+            </label>
+            <div class="error-message" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+        </div>
+
+        <div class="input-group">
+            <label>
+                <input type="password" th:field="*{password}" required placeholder=" "
+                       th:classappend="${#fields.hasErrors('password')} ? 'error-input'">
+                <span class="floating-label">Password</span>
+            </label>
+            <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            <div th:if="${error}" class="error-message" th:text="${error}"></div>
+        </div>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <div class="signup-link">
+        Don't have an account? <a href="/auth/signup">Create account</a>
+    </div>
+</body>
+</html>

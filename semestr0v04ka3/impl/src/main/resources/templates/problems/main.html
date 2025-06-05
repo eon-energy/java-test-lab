@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Page</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap"
+          rel="stylesheet">
+
+    <link th:href="@{/css/base.css}" rel="stylesheet">
+    <link th:href="@{/css/header.css}" rel="stylesheet">
+
+    <link th:href="@{/css/problem-summary.css}" rel="stylesheet">
+</head>
+
+<div th:replace="fragments/header :: header"></div>
+
+<body>
+<div class="container">
+
+    <h1 class="page-title">Список задач</h1>
+
+    <div class="problems-grid">
+        <a class="problem-card"
+           th:each="p : ${problems}"
+           th:href="@{/problems/{id}(id=${p.id})}">
+            <h2 class="problem-title" th:text="${p.title}">Two Sum</h2>
+
+            <span class="difficulty"
+                  th:style="'background-color:' + ${p.difficultyLevelColor}"
+                  th:text="${p.difficultyLevel}">
+                Easy
+            </span>
+
+            <p class="creator" th:text="'Автор: ' + ${p.creator}">Автор: admin</p>
+        </a>
+    </div>
+
+    <div class="pagination" th:if="${problems.totalPages > 1}">
+        <a th:each="page : ${#numbers.sequence(0, problems.totalPages - 1)}"
+           th:href="@{/problems(page=${page})}"
+           th:text="${page + 1}"
+           th:classappend="${page} == ${problems.number} ? 'active' : ''">1</a>
+    </div>
+
+</div>
+</body>
+</html>

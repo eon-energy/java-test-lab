@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>File Upload Form</title>
+</head>
+<body>
+<h1>Upload File</h1>
+
+<div th:if="${param.success}">
+    File uploaded successfully!
+</div>
+<div th:if="${param.error}">
+    Error occurred during upload!
+</div>
+
+<form method="POST" action="/test/upload" enctype="multipart/form-data">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <div>
+        <label for="textInput">Text input:</label>
+        <input type="text" id="textInput" name="textInput">
+    </div>
+
+    <div>
+        <label for="file">Select file:</label>
+        <input type="file" id="file" name="file">
+    </div>
+
+    <button type="submit">Upload</button>
+</form>
+</body>
+</html>

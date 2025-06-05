@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Bungee&family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap");
+
+.container {
+    align-self: start;
+}
+
+.page-title {
+    font-family: "Bungee", cursive;
+    font-size: 2.8rem;
+    margin: 140px 0 40px;
+    text-align: center;
+    color: var(--text-dark);
+}
+
+.problems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 32px;
+    max-width: 1300px;
+    margin: 0 auto 60px;
+}
+
+.problem-card {
+    background: var(--bg);
+    border: 2px solid var(--text-dark);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.problem-card:hover {
+    transform: translateY(-6px);
+}
+
+.problem-title {
+    margin: 0 0 14px;
+    font-size: 1.4rem;
+    line-height: 1.3;
+    color: var(--text-dark);
+}
+
+.difficulty {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: "Inter", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bg);
+}
+
+
+.creator {
+    margin-top: 18px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.pagination {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.pagination a {
+    display: inline-block;
+    margin: 0 6px;
+    padding: 6px 12px;
+    border: 2px solid var(--text-dark);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: background-color .25s ease;
+}
+
+.pagination a:hover,
+.pagination a.active {
+    background-color: var(--accent-hover);
+    color: var(--bg);
+}
