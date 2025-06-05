@@ -1,0 +1,36 @@
+apply plugin: 'org.springframework.boot'
+
+
+
+dependencies {
+    implementation project(':db')
+    implementation project(':api')
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation("io.minio:minio:${minioVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:${redisVersion}")
+
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:${thymeleafSecurityVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${thymeleafVersion}")
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.springframework.security:spring-security-test'
+
+}
+
+bootJar {
+    mainClass = 'com.technokratos.Semestr0v04ka3Application'
+}
+
+
+test {
+    useJUnitPlatform()
+}

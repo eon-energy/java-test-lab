@@ -1,0 +1,5 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}")
+}

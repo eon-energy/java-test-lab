@@ -1,0 +1,5 @@
+rootProject.name = 'semestr0v04ka3'
+include 'impl'
+include 'api'
+include 'db'
+

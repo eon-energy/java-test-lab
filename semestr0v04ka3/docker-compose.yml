@@ -1,0 +1,80 @@
+services:
+  postgres:
+    container_name: semestr0v04ka3-postgres
+    image: postgres:17.0
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: semestr0v04ka
+      POSTGRES_PASSWORD: semestr0v04ka
+      POSTGRES_DB: semestr0v04ka
+    networks:
+      - backend
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    container_name: semestr0v04ka3-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+      - minio_config:/root/.minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.4.0
+    restart: unless-stopped
+    container_name: semestr0v04ka3-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass redisadmin
+    networks:
+      - backend
+
+  app:
+    image: semestr0v04ka3:latest
+    container_name: semestr0v04ka3-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/semestr0v04ka
+      SPRING_DATASOURCE_USERNAME: semestr0v04ka
+      SPRING_DATASOURCE_PASSWORD: semestr0v04ka
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: redisadmin
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_BUCKET: uploads
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+volumes:
+  redis_data:
+  postgres_data:
+  minio_data:
+  minio_config:
+
+networks:
+  backend:
+    driver: bridge
