@@ -26,6 +26,10 @@ spring:
       password: ${SPRING_REDIS_PASSWORD}
       repositories:
         enabled: false
+    web:
+      pageable:
+        default-page-size:
+
 
 minio:
   endpoint: ${MINIO_ENDPOINT:}
@@ -40,6 +44,10 @@ problem-queue-workers:
 test-container:
   docker-file: ${TEST_CONTAINER_DOCKERFILE}
   script: ${TEST_CONTAINER_SCRIPT}
+
+web-hook:
+  get-solution: ${GET_SOLUTION_URL}
+
 
 logging:
   level:
