@@ -1,10 +1,9 @@
-package com.technokratos.dto.response;
+package com.technokratos.dto.problem;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Getter
-@Setter
+
 @Data
 @Builder
 @AllArgsConstructor

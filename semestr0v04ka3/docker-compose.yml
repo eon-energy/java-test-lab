@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   postgres:
     container_name: semestr0v04ka3-postgres
@@ -44,11 +46,11 @@ services:
       - backend
 
   app:
-    image: semestr0v04ka3:latest
-    container_name: semestr0v04ka3-app
     build:
       context: .
       dockerfile: Dockerfile
+    image: semestr0v04ka3:latest
+    container_name: semestr0v04ka3-app
     depends_on:
       - postgres
       - redis
@@ -57,13 +59,26 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/semestr0v04ka
       SPRING_DATASOURCE_USERNAME: semestr0v04ka
       SPRING_DATASOURCE_PASSWORD: semestr0v04ka
+
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: redisadmin
+
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
       MINIO_BUCKET: uploads
+
+      DOCKER_HOST: unix:///var/run/docker.sock
+
+      TEST_CONTAINER_DOCKERFILE: /app/test-container/Dockerfile
+      TEST_CONTAINER_SCRIPT: /app/test-container/run-tests.sh
+
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+      TESTCONTAINERS_RYUK_CONTAINER_NETWORK: backend
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080:8080"
     networks:

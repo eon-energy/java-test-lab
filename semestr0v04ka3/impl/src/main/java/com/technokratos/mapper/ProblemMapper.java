@@ -2,11 +2,11 @@ package com.technokratos.mapper;
 
 import com.technokratos.dto.request.ProblemCreateRequest;
 import com.technokratos.dto.response.DifficultyLevelResponse;
+import com.technokratos.dto.problem.ProblemCreateDto;
 import com.technokratos.dto.response.problem.ProblemCreateResponse;
 import com.technokratos.dto.response.problem.ProblemFullContentResponse;
 import com.technokratos.dto.response.problem.ProblemSolutionResponse;
-import com.technokratos.dto.response.ProblemCreateDto;
-import com.technokratos.dto.response.ProblemSummaryDto;
+import com.technokratos.dto.problem.ProblemSummaryDto;
 import com.technokratos.entity.internal.DifficultyLevel;
 import com.technokratos.entity.internal.Problem;
 import org.mapstruct.Mapper;
@@ -50,4 +50,5 @@ public interface ProblemMapper {
         response.setColor(difficulty.getStyle().getColor());
         return response;
     }
+
 }

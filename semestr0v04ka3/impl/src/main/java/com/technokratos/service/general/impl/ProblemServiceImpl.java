@@ -1,12 +1,13 @@
 package com.technokratos.service.general.impl;
 
+import com.technokratos.client.TypographyClient;
 import com.technokratos.dto.request.ProblemCreateRequest;
+import com.technokratos.dto.problem.ProblemCreateDto;
 import com.technokratos.dto.response.problem.ProblemCreateResponse;
 import com.technokratos.dto.response.problem.ProblemFileContentResponse;
 import com.technokratos.dto.response.problem.ProblemFullContentResponse;
 import com.technokratos.dto.response.problem.ProblemSolutionResponse;
-import com.technokratos.dto.response.ProblemCreateDto;
-import com.technokratos.dto.response.ProblemSummaryDto;
+import com.technokratos.dto.problem.ProblemSummaryDto;
 import com.technokratos.dto.security.UserDetailsImpl;
 import com.technokratos.entity.internal.Account;
 import com.technokratos.entity.internal.DifficultyLevel;
@@ -17,6 +18,7 @@ import com.technokratos.exception.problemServiceException.ProblemUploadingExcept
 import com.technokratos.mapper.ProblemMapper;
 import com.technokratos.properties.MinioProperties;
 import com.technokratos.repository.ProblemRepository;
+import com.technokratos.service.general.WebHookService;
 import com.technokratos.service.sub.DifficultyLevelService;
 import com.technokratos.service.general.ProblemService;
 import com.technokratos.service.minio.MinioService;
@@ -45,7 +47,11 @@ public class ProblemServiceImpl implements ProblemService {
 
     private final MinioService minio;
     private final DifficultyLevelService difficultyService;
+
     private final ProblemRepository problemRepository;
+
+    private final TypographyClient typographyClient;
+
     private final ProblemMapper mapper;
 
     @Override
@@ -56,17 +62,23 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public Page<ProblemSummaryDto> getAll(Pageable pageable) {
-        //TODO починить n+1
         return problemRepository.findAll(pageable)
                 .map(mapper::toSummary);
     }
 
+    @Override
+    public Page<ProblemSummaryDto> getByAccount(Pageable pageable, UserDetailsImpl userDetails) {
+        return problemRepository.findByCreator(userDetails.getAccount(), pageable)
+                .map(mapper::toSummary);
+    }
 
     @Override
     @Transactional
     public Problem create(UserDetailsImpl user, ProblemCreateDto dto) {
         DifficultyLevel difficulty = difficultyService.findByName(dto.getDifficultyLevel());
         UUID objectId = UUID.randomUUID();
+
+        String formatDescription = typographyClient.formatMarkdown(dto.getDescription());
 
         final String tmpPrefix = TMP_PREFIX_PATTERN.formatted(objectId);
         final String finalPrefix = FINAL_PREFIX_PATTERN.formatted(objectId);
@@ -87,10 +99,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .isPrivate(dto.isPersonal())
                 .build();
         try {
-            uploadAssets(dto, problem.getBucket(), tmpPrefix);
-
-            //todo проверить что оно компилится
-
+            uploadAssets(dto, formatDescription, problem.getBucket(), tmpPrefix);
             promoteAssets(props.getBucket(), tmpPrefix, props.getBucket(), finalPrefix);
             problem = problemRepository.save(problem);
             log.info("Problem {} uploaded successfully", problem.getId());
@@ -104,7 +113,7 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public String getTestFileUrl(Problem problem) {
+    public String getTestFileLink(Problem problem) {
         return minio.getFileUrl(problem.getBucket(), problem.getPrefix() + SOLUTION_TEST_SUFFIX);
     }
 
@@ -169,8 +178,8 @@ public class ProblemServiceImpl implements ProblemService {
         }
     }
 
-    private void uploadAssets(ProblemCreateDto dto, String bucket, String prefix) {
-        minio.uploadText(dto.getDescription(), bucket, prefix + DESCRIPTION_SUFFIX);
+    private void uploadAssets(ProblemCreateDto dto, String description, String bucket, String prefix) {
+        minio.uploadText(description, bucket, prefix + DESCRIPTION_SUFFIX);
         minio.uploadText(dto.getSolutionTemplate(), bucket, prefix + SOLUTION_TEMPLATE_SUFFIX);
         minio.uploadText(dto.getSolutionTest(), bucket, prefix + SOLUTION_TEST_SUFFIX);
     }

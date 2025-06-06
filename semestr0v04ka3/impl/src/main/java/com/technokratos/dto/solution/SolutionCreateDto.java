@@ -1,4 +1,4 @@
-package com.technokratos.dto.response;
+package com.technokratos.dto.solution;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

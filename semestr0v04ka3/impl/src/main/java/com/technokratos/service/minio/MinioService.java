@@ -2,6 +2,8 @@ package com.technokratos.service.minio;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 public interface MinioService {
     String uploadFile(MultipartFile file, String bucket, String key);
 
@@ -16,4 +18,6 @@ public interface MinioService {
     String getFileUrl(String bucket,String objectKey);
 
     String getFileContent(String bucket, String objectKey);
+
+    InputStream getFileStream(String bucket, String key);
 }

@@ -1,7 +1,7 @@
 package com.technokratos.controller.web;
 
+import com.technokratos.dto.problem.ProblemCreateDto;
 import com.technokratos.dto.response.problem.ProblemFileContentResponse;
-import com.technokratos.dto.response.ProblemCreateDto;
 import com.technokratos.dto.security.UserDetailsImpl;
 import com.technokratos.service.sub.DifficultyLevelService;
 import com.technokratos.service.general.ProblemService;
@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/problems")
@@ -24,6 +26,7 @@ public class ProblemWebControllerImpl {
     private static final String CREATE_VIEW = "problems/create";
     private static final String CREATE_SUCCESS_VIEW = "problems/create-success";
     private static final String MAIN_VIEW = "problems/main";
+    private static final String MY_VIEW = "problems/my";
 
     private final ProblemService problemService;
     private final DifficultyLevelService difficultyLevelService;
@@ -66,6 +69,22 @@ public class ProblemWebControllerImpl {
         }
 
     }
+
+    @GetMapping("/my")
+    public String getByAccount(Model model,
+                               @AuthenticationPrincipal UserDetailsImpl userDetails,
+                               @PageableDefault(size = 12, sort = "title") Pageable pageable) {
+
+        model.addAttribute("problems", problemService.getByAccount(pageable, userDetails));
+        return MY_VIEW;
+    }
+
+    @GetMapping("/{id}")
+    public String getForSolve(Model model, @PathVariable UUID id) {
+        model.addAttribute("problems", problemService.getForSolvingById(id));
+        return MY_VIEW;
+    }
+
 
     @GetMapping()
     public String getALl(Model model,

@@ -138,4 +138,18 @@ public class MinioServiceImpl implements MinioService {
 
     }
 
+    @Override
+    public InputStream getFileStream(String bucket, String key) {
+        try {
+            return client.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(key)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new MinioReadObjectException(key, e);
+        }
+    }
+
 }

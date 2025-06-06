@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003_add_test_stats_to_solutions
+      author: ion
+      changes:
+        - addColumn:
+            tableName: solutions
+            columns:
+              - column:
+                  name: external_solution_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            constraintName: fk_solution_external_solution
+            baseTableName: solutions
+            baseColumnNames: external_solution_id
+            referencedTableName: external_solution
+            referencedColumnNames: id

@@ -19,7 +19,7 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private Account creator;
 
@@ -33,10 +33,11 @@ public class Problem {
     private String prefix;
 
     @Column(nullable = false)
-    private int maxExecutionTimeMs = 2000;
+    private int maxExecutionTimeMs;
 
     @Column(nullable = false)
-    private int maxMemoryUsedMb = 256;
+    private int maxMemoryUsedMb;
+
 
     @Column(nullable = false)
     private boolean isPrivate;

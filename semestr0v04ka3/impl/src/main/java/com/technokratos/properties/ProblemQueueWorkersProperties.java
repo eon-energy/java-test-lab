@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "problem-queue-workers")
 @Getter
 @RequiredArgsConstructor
-@Validated
 public class ProblemQueueWorkersProperties {
     private final int workersCount;
     private final int redisDequeueTimeoutSeconds;

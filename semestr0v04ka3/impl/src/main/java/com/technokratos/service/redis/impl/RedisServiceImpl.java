@@ -24,8 +24,8 @@ public class RedisServiceImpl implements RedisService {
 
 
     @Override
-    public void enqueue(UUID id, String testLink, String solutionLink) {
-        ProblemPayload payload = new ProblemPayload(id, testLink, solutionLink);
+    public void enqueue(UUID id, String solutionLink, String testLink) {
+        ProblemPayload payload = new ProblemPayload(id, solutionLink, testLink);
         try {
             String json = objectMapper.writeValueAsString(payload);
             redisTpl.opsForList().leftPush(QUEUE_KEY, json);

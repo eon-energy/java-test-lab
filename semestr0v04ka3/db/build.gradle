@@ -1,6 +1,3 @@
 dependencies {
     implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
-
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
 }

@@ -1,7 +1,13 @@
 package com.technokratos.worker;
 
 import com.technokratos.dto.redis.ProblemPayload;
+import com.technokratos.dto.tests.TestResult;
+import com.technokratos.entity.enums.SolutionStatusCode;
 import com.technokratos.properties.ProblemQueueWorkersProperties;
+import com.technokratos.service.docker.DockerContainersService;
+import com.technokratos.service.docker.impl.DockerContainerServiceImpl;
+import com.technokratos.service.general.ProblemService;
+import com.technokratos.service.general.SolutionService;
 import com.technokratos.service.minio.MinioService;
 import com.technokratos.service.redis.impl.RedisServiceImpl;
 import jakarta.annotation.PostConstruct;
@@ -25,8 +31,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProblemQueueWorker {
     private final RedisServiceImpl redisService;
     private ExecutorService executorService;
-
+    private final DockerContainersService dockerService;
     private final ProblemQueueWorkersProperties props;
+    private final SolutionService solutionService;
 
     private volatile boolean running = true;
 
@@ -98,9 +105,12 @@ public class ProblemQueueWorker {
         UUID solutionId = payload.getSolutionId();
         try {
             log.debug("Начинаем обработку payload.solutionId={}", solutionId);
-            log.info(payload.getTestCodeLink());
-            log.info(payload.getSolutionCodeLink());
+
+            TestResult result = dockerService.executeCode(payload.getSolutionCodeLink(), payload.getTestCodeLink());
+            solutionService.updateStats(payload.getSolutionId(), result);
             log.info("Успешно обработали payload.solutionId={}", solutionId);
+
+
         } catch (Exception e) {
             log.error("Ошибка при обработке payload.solutionId={}", solutionId, e);
         }

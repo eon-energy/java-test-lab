@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003_add_test_stats_to_solutions
+      author: ion
+      changes:
+        - addColumn:
+            tableName: solutions
+            columns:
+              - column:
+                  name: total_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: skipped_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: started_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aborted_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: passed_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: failed_tests
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

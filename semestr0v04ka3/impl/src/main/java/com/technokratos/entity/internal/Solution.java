@@ -1,5 +1,6 @@
 package com.technokratos.entity.internal;
 
+import com.technokratos.entity.external.ExternalSolution;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -15,7 +16,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"sender", "problem"})
 @Table(name = "solutions")
 public class Solution {
     @Id
@@ -23,17 +23,44 @@ public class Solution {
     @Column(columnDefinition = "uuid", updatable = false)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id")
     private Account sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     private Problem problem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", nullable = false)
     private SolutionStatus status;
+
+    @OneToOne(mappedBy = "solution", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ExternalSolution externalSolution;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int totalTests;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int skippedTests;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int startedTests;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int abortedTests;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int passedTests;
+
+    @PositiveOrZero
+    @Column(nullable = false)
+    private int failedTests;
 
     @PositiveOrZero
     @Column(name = "execution_time_ms")

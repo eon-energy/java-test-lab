@@ -37,9 +37,14 @@ problem-queue-workers:
   redisDequeueTimeoutSeconds: 5
   workers-count: 4
 
+test-container:
+  docker-file: ${TEST_CONTAINER_DOCKERFILE}
+  script: ${TEST_CONTAINER_SCRIPT}
+
 logging:
   level:
     com.technokratos.securitytest: DEBUG
+
 
 services:
   solution-service:

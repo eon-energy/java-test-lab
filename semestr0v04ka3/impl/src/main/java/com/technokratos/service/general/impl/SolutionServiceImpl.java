@@ -1,10 +1,10 @@
 package com.technokratos.service.general.impl;
 
+import com.technokratos.dto.response.solution.SolutionCreateResponse;
 import com.technokratos.dto.response.solution.SolutionResponse;
 import com.technokratos.dto.security.UserDetailsImpl;
-import com.technokratos.dto.request.SolutionCreateRequest;
-import com.technokratos.dto.response.SolutionCreateDto;
-import com.technokratos.dto.response.solution.SolutionCreateResponse;
+import com.technokratos.dto.solution.SolutionCreateDto;
+import com.technokratos.dto.tests.TestResult;
 import com.technokratos.entity.enums.SolutionStatusCode;
 import com.technokratos.entity.external.ExternalSolution;
 import com.technokratos.entity.internal.Account;
@@ -19,6 +19,7 @@ import com.technokratos.repository.ExternalSolutionRepository;
 import com.technokratos.repository.SolutionRepository;
 import com.technokratos.service.general.ProblemService;
 import com.technokratos.service.general.SolutionService;
+import com.technokratos.service.general.WebHookService;
 import com.technokratos.service.minio.MinioService;
 import com.technokratos.service.redis.RedisService;
 import com.technokratos.service.sub.SolutionStatusService;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -40,17 +42,19 @@ public class SolutionServiceImpl implements SolutionService {
     private final SolutionRepository solutionRepository;
     private final ExternalSolutionRepository externalSolutionRepository;
 
+    private final MinioProperties props;
+
     private final ProblemService problemService;
     private final SolutionStatusService statusService;
     private final MinioService minio;
-    private final MinioProperties props;
     private final RedisService redisService;
+    private final WebHookService webHookService;
+
     private final SolutionMapper mapper;
 
     @Override
     public SolutionResponse getById(UUID id) {
-        Solution solution = solutionRepository.findById(id)
-                .orElseThrow(() -> new SolutionNotFoundException(id));
+        Solution solution = findById(id);
         SolutionResponse response = mapper.toStatusResponse(solution);
         response.setCode(minio.getFileContent(solution.getBucket(), solution.getPrefix()));
         return response;
@@ -59,14 +63,15 @@ public class SolutionServiceImpl implements SolutionService {
 
     @Override
     @Transactional
-    public SolutionCreateResponse addSolution(SolutionCreateRequest request) {
+    public SolutionCreateResponse addSolution(com.technokratos.dto.request.SolutionCreateRequest request) {
         Solution solution = save(request.getSolutionCode(), request.getProblemId(), null);
         addToRedis(solution);
-        externalSolutionRepository.save(ExternalSolution.builder()
+        ExternalSolution externalSolution = externalSolutionRepository.save(ExternalSolution.builder()
                 .solution(solution)
                 .callbackUrl(request.getCallbackUrl())
                 .callbackSecret(request.getCallbackSecret())
                 .build());
+
         SolutionCreateResponse createResponse = mapper.toCreateResponse(solution);
         createResponse.setSolutionCode(request.getSolutionCode());
         return createResponse;
@@ -79,9 +84,43 @@ public class SolutionServiceImpl implements SolutionService {
         return solution.getId();
     }
 
+    private void notifyIfExternal(UUID id) {
+        Optional<ExternalSolution> externalSolution = externalSolutionRepository.findBySolutionId(id);
+        externalSolution.ifPresent(solution -> webHookService.notifyExternalService(
+                solution.getCallbackUrl(),
+                solution.getCallbackSecret(),
+                solution.getSolution().getId()));
+    }
+
+    @Override
+    public Solution findById(UUID id) {
+        return solutionRepository.findById(id)
+                .orElseThrow(() -> new SolutionNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
     public void updateStatus(UUID id, SolutionStatusCode statusCode) {
         SolutionStatus status = statusService.findByCode(statusCode.name());
         solutionRepository.updateStatusById(id, status);
+        notifyIfExternal(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateStats(UUID id, TestResult result) {
+        solutionRepository.updateTestStats(id,
+                result.getTotalTests(),
+                result.getSkippedTests(),
+                result.getStartedTests(),
+                result.getAbortedTests(),
+                result.getPassedTests(),
+                result.getFailedTests(),
+                result.getExecutionTimeSeconds(),
+                result.getMaxMemoryMb(),
+                result.getCompilationErrors()
+        );
+        updateStatus(id, result.getStatus());
     }
 
 
@@ -115,20 +154,28 @@ public class SolutionServiceImpl implements SolutionService {
             log.error("Uploading solution {} failed, rollback started", problem.getId(), e);
             throw new SolutionUploadingException(problem.getId(), e);
         }
+
     }
 
-    private void addToRedis(Solution solution) {
+    @Transactional
+    protected void addToRedis(Solution solution) {
         log.info("Putting in queue");
         try {
-            String solutionUrl = minio.getFileUrl(solution.getBucket(), solution.getPrefix());
-            String testFileUrl = problemService.getTestFileUrl(solution.getProblem());
-            redisService.enqueue(solution.getId(), testFileUrl, solutionUrl);
+            String solutionLink = minio.getFileUrl(solution.getBucket(), solution.getPrefix());
+            String testFileLink = problemService.getTestFileLink(solution.getProblem());
+
+            log.info(solutionLink);
+            log.info(testFileLink);
+
+            redisService.enqueue(solution.getId(), solutionLink, testFileLink);
+
+            updateStatus(solution.getId(), SolutionStatusCode.QUEUED);
+
         } catch (Exception e) {
             minio.removeFile(props.getBucket(), solution.getPrefix());
             updateStatus(solution.getId(), SolutionStatusCode.INTERNAL_ERROR);
             throw new SolutionUploadingException(solution.getId(), e);
         }
-        updateStatus(solution.getId(), SolutionStatusCode.QUEUED);
 
     }
 

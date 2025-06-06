@@ -1,4 +1,4 @@
-package com.technokratos.dto.response;
+package com.technokratos.dto.problem;
 
 import lombok.*;
 
