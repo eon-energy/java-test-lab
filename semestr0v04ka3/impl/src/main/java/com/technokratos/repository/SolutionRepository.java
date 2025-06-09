@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public interface SolutionRepository extends JpaRepository<Solution, UUID> {
@@ -21,7 +20,7 @@ public interface SolutionRepository extends JpaRepository<Solution, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE Solution s SET s.status = :status WHERE s.id = :id")
-    int updateStatusById(
+    void updateStatusById(
             @Param("id") UUID id,
             @Param("status") SolutionStatus status
     );
@@ -41,7 +40,7 @@ public interface SolutionRepository extends JpaRepository<Solution, UUID> {
                    s.logMessage = :logMessage
              WHERE s.id = :id
             """)
-    int updateTestStats(
+    void updateTestStats(
             @Param("id") UUID id,
             @Param("totalTests") int totalTests,
             @Param("skippedTests") int skippedTests,

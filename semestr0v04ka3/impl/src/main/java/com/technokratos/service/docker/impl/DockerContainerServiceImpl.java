@@ -31,10 +31,6 @@ public class DockerContainerServiceImpl implements DockerContainersService {
 
     @Override
     public TestResult executeCode(String solutionLink, String testLink) {
-        log.info(solutionLink);
-        log.info(testLink);
-
-
         ImageFromDockerfile image = new ImageFromDockerfile()
                 .withDockerfile(Paths.get(props.getDockerFile()))
                 .withFileFromPath("/app/run-tests.sh", Paths.get(props.getScript()));
@@ -47,7 +43,7 @@ public class DockerContainerServiceImpl implements DockerContainersService {
                             .withHostConfig(new HostConfig()
                                     .withMemory(100 * 1024 * 1024L)
                                     .withCpuCount(1L)
-                                    .withNetworkMode("semestr0v04ka3_backend"))
+                                    .withNetworkMode("host"))
                     );
             container.setWaitStrategy(Wait.forLogMessage(".*(COMPILATION FAILED|TEST OUTPUT|DOWNLOAD FAILED).*", 1)
                     .withStartupTimeout(Duration.ofMinutes(2)));

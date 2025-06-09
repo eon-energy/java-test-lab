@@ -107,6 +107,7 @@ public class ProblemQueueWorker {
             log.debug("Начинаем обработку payload.solutionId={}", solutionId);
 
             TestResult result = dockerService.executeCode(payload.getSolutionCodeLink(), payload.getTestCodeLink());
+
             solutionService.updateStats(payload.getSolutionId(), result);
             log.info("Успешно обработали payload.solutionId={}", solutionId);
 

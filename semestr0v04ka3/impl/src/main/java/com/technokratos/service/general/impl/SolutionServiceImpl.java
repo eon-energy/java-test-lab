@@ -81,6 +81,7 @@ public class SolutionServiceImpl implements SolutionService {
     @Transactional
     public UUID addSolution(SolutionCreateDto dto, UserDetailsImpl user) {
         Solution solution = save(dto.getSolutionCode(), dto.getProblemId(), user.getAccount());
+        addToRedis(solution);
         return solution.getId();
     }
 
