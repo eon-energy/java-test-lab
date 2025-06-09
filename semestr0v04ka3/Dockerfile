@@ -6,7 +6,6 @@ RUN ./gradlew :impl:bootJar --no-daemon --no-watch-fs
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-RUN apk update && apk add --no-cache docker-cli
 
 COPY --from=builder /app/impl/build/libs/impl-0.0.1-SNAPSHOT.jar ./impl-0.0.1-SNAPSHOT.jar
 
