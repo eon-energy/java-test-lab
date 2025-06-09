@@ -4,6 +4,7 @@ import com.technokratos.dto.tests.TestDetail;
 import com.technokratos.dto.tests.TestResult;
 import com.technokratos.entity.enums.SolutionStatusCode;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @UtilityClass
+@Slf4j
 public class TestResultParser {
     private static final Pattern TEST_STATS_PATTERN = Pattern.compile(
             "\\[\\s*(\\d+) tests? found\\s*\\]\\R" +
@@ -55,7 +57,7 @@ public class TestResultParser {
         determineOverallStatus(result, logs);
 
         extractMetrics(logs, result);
-
+        log.info(logs);
         return result;
     }
 

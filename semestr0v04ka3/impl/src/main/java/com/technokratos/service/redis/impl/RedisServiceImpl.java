@@ -29,6 +29,7 @@ public class RedisServiceImpl implements RedisService {
         try {
             String json = objectMapper.writeValueAsString(payload);
             redisTpl.opsForList().leftPush(QUEUE_KEY, json);
+            log.info("solution %s in queue".formatted(id));
         } catch (JsonProcessingException e) {
             log.error("Serialization failed ProblemPayload", e);
             throw new RedisSerializationException(e);

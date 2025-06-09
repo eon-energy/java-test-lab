@@ -66,12 +66,13 @@ public class SolutionServiceImpl implements SolutionService {
     public SolutionCreateResponse addSolution(com.technokratos.dto.request.SolutionCreateRequest request) {
         Solution solution = save(request.getSolutionCode(), request.getProblemId(), null);
         addToRedis(solution);
+        log.debug("saving external solution");
         ExternalSolution externalSolution = externalSolutionRepository.save(ExternalSolution.builder()
                 .solution(solution)
                 .callbackUrl(request.getCallbackUrl())
                 .callbackSecret(request.getCallbackSecret())
                 .build());
-
+        log.info("external solution saved");
         SolutionCreateResponse createResponse = mapper.toCreateResponse(solution);
         createResponse.setSolutionCode(request.getSolutionCode());
         return createResponse;
@@ -104,6 +105,7 @@ public class SolutionServiceImpl implements SolutionService {
     public void updateStatus(UUID id, SolutionStatusCode statusCode) {
         SolutionStatus status = statusService.findByCode(statusCode.name());
         solutionRepository.updateStatusById(id, status);
+        log.info("solution %s status updated".formatted(id));
         notifyIfExternal(id);
     }
 
@@ -164,9 +166,6 @@ public class SolutionServiceImpl implements SolutionService {
         try {
             String solutionLink = minio.getFileUrl(solution.getBucket(), solution.getPrefix());
             String testFileLink = problemService.getTestFileLink(solution.getProblem());
-
-            log.info(solutionLink);
-            log.info(testFileLink);
 
             redisService.enqueue(solution.getId(), solutionLink, testFileLink);
 
