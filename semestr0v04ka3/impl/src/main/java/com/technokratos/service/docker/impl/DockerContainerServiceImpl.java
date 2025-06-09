@@ -43,7 +43,7 @@ public class DockerContainerServiceImpl implements DockerContainersService {
                             .withHostConfig(new HostConfig()
                                     .withMemory(100 * 1024 * 1024L)
                                     .withCpuCount(1L)
-                                    .withNetworkMode("host"))
+                                    .withNetworkMode("semestr0v04ka3_backend"))
                     );
             container.setWaitStrategy(Wait.forLogMessage(".*(COMPILATION FAILED|TEST OUTPUT|DOWNLOAD FAILED).*", 1)
                     .withStartupTimeout(Duration.ofMinutes(2)));
