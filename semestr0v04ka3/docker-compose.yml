@@ -1,0 +1,96 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: semestr0v04ka3-postgres
+    image: postgres:17.0
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: semestr0v04ka
+      POSTGRES_PASSWORD: semestr0v04ka
+      POSTGRES_DB: semestr0v04ka
+    networks:
+      - backend
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    container_name: semestr0v04ka3-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+      - minio_config:/root/.minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.4.0
+    restart: unless-stopped
+    container_name: semestr0v04ka3-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass redisadmin
+    networks:
+      - backend
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: semestr0v04ka3:latest
+    container_name: semestr0v04ka3-app
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/semestr0v04ka
+      SPRING_DATASOURCE_USERNAME: semestr0v04ka
+      SPRING_DATASOURCE_PASSWORD: semestr0v04ka
+
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: redisadmin
+
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_BUCKET: uploads
+
+      DOCKER_HOST: unix:///var/run/docker.sock
+
+      TEST_CONTAINER_DOCKERFILE: /app/test-container/Dockerfile
+      TEST_CONTAINER_SCRIPT: /app/test-container/run-tests.sh
+
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+      TESTCONTAINERS_RYUK_CONTAINER_NETWORK: backend
+
+      GET_SOLUTION_URL: http://localhost:8080/api/v1/solutions/%s
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+volumes:
+  redis_data:
+  postgres_data:
+  minio_data:
+  minio_config:
+
+networks:
+  backend:
+    driver: bridge

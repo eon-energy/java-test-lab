@@ -1,0 +1,95 @@
+:root{
+    --accent:#000;
+    --accent-hover:#8490C8FF;
+    --bg:#f5e6d3;
+    --text-dark:#2b1e12;
+    --radius:8px;
+}
+
+
+.site-header{
+    position:fixed;
+    top:0;
+    width:100%;
+    padding:14px 40px;
+    background:#f5e6d3;
+    backdrop-filter:blur(8px);
+    border-bottom:2px solid #000;
+    z-index:1000;
+}
+
+.header-inner{
+    max-width:1800px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+}
+
+
+.logo{
+    font-family:"Bungee", cursive;
+    font-size:2.2rem;
+    font-weight:900;
+    color:var(--text-dark);
+    text-decoration:none;
+    letter-spacing:2px;
+}
+
+
+.header-links{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+}
+
+.header-links a{
+    position:relative;
+    font-family:"Bungee", cursive;
+    font-size:1.2rem;
+    font-weight:600;
+    color:var(--text-dark);
+    text-decoration:none;
+    padding:8px 4px;
+    transition:color .3s ease;
+}
+
+.header-links a::after{
+    content:"";
+    left:0;
+    bottom:-4px;
+    width:0;
+    height:2px;
+    background:var(--accent);
+    transition:width .3s ease;
+}
+
+.header-links a:hover::after{
+    width:100%;
+}
+
+.header-links    a:hover{
+    color:var(--accent-hover);
+}
+
+.logout-form{
+
+}
+
+.logout-btn{
+    background-color:var(--accent);
+    color:var(--bg);
+    padding:8px 18px;
+    border:none;
+    border-radius:var(--radius);
+    font-family:"Inter", sans-serif;
+    font-weight:600;
+    cursor:pointer;
+    transition:background-color .3s ease, transform .3s ease;
+}
+
+.logout-btn:hover{
+    background-color:var(--accent-hover);
+    transform:scale(1.05);
+    /* цвет текста остаётся прежним */
+}

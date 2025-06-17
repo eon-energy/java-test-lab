@@ -1,0 +1,108 @@
+.signup-link,
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: var(--text-muted);
+}
+
+.signup-link a,
+.login-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 6px;
+    font-family: "Inter", sans-serif;
+}
+
+.auth-form {
+    width: 200px;
+}
+
+body {
+    flex-direction: column;
+}
+
+button {
+    width: 200px;
+    padding: 14px;
+    background-color: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: var(--radius);
+    letter-spacing: 1px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+}
+
+.input-group {
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+input {
+    width: 100%;
+    border: none;
+    border-bottom: 3px solid var(--text-dark);
+    padding: 10px 0 5px 0;
+    font-size: 1rem;
+    background: transparent;
+    transition: all 0.3s ease;
+    font-family: "Lora", serif;
+}
+
+input:focus {
+    outline: none;
+    border-color: #666;
+}
+
+.floating-label {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    font-size: 0.95rem;
+    color: #666;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    font-family: "Inter", sans-serif;
+}
+
+input:focus + .floating-label,
+input:not(:placeholder-shown) + .floating-label {
+    top: -18px;
+    left: 4px;
+    font-size: 0.8rem;
+    color: var(--text-dark);
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    font-family: "Inter", sans-serif;
+}
+
+.nav-links {
+    top: 20px;
+    right: 20px;
+}
+
+.nav-links a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-family: "Inter", sans-serif;
+    margin-left: 20px;
+    font-weight: 600;
+}

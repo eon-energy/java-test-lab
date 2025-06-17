@@ -1,0 +1,375 @@
+databaseChangeLog:
+  ##################################################################
+  # 1. role
+  ##################################################################
+  - changeSet:
+      id: 1
+      author: ion
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_role
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_role_name
+
+  ##################################################################
+  # 2. difficulty_level
+  ##################################################################
+  - changeSet:
+      id: 2
+      author: ion
+      changes:
+        - createTable:
+            tableName: difficulty_level
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_difficulty_level
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_difficulty_level_name
+
+  ##################################################################
+  # 3. difficulty_level_style
+  ##################################################################
+  - changeSet:
+      id: 3
+      author: ion
+      changes:
+        - createTable:
+            tableName: difficulty_level_style
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_difficulty_level_style
+              - column:
+                  name: color
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_difficulty_level_style_level
+        - addForeignKeyConstraint:
+            constraintName: fk_difficulty_level_style__difficulty_level
+            baseTableName: difficulty_level_style
+            baseColumnNames: level_id
+            referencedTableName: difficulty_level
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  ##################################################################
+  # 4. account
+  ##################################################################
+  - changeSet:
+      id: 4
+      author: ion
+      changes:
+        - createTable:
+            tableName: account
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_account
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_account_username
+              - column:
+                  name: hash_password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_account__role
+            baseTableName: account
+            baseColumnNames: role_id
+            referencedTableName: role
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+  ##################################################################
+  # 5. solution_status
+  ##################################################################
+  - changeSet:
+      id: 5
+      author: ion
+      changes:
+        - createTable:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_solution_status
+              - column:
+                  name: code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_solution_status_code
+
+  ##################################################################
+  # 6. problem
+  ##################################################################
+  - changeSet:
+      id: 6
+      author: ion
+      changes:
+        - createTable:
+            tableName: problem
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_problem
+              - column:
+                  name: creator_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bucket
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prefix
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_execution_time_ms
+                  type: INT
+                  defaultValueNumeric: 2000
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_memory_used_mb
+                  type: INT
+                  defaultValueNumeric: 256
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_private
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: difficulty_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_problem__account
+            baseTableName: problem
+            baseColumnNames: creator_id
+            referencedTableName: account
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            constraintName: fk_problem__difficulty_level
+            baseTableName: problem
+            baseColumnNames: difficulty_id
+            referencedTableName: difficulty_level
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+  ##################################################################
+  # 7. solution
+  ##################################################################
+  - changeSet:
+      id: 7
+      author: ion
+      changes:
+        - createTable:
+            tableName: solutions
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_solution
+              - column:
+                  name: sender_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: problem_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_time_ms
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: memory_used_bytes
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: log_message
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: bucket
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prefix
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_solution__account
+            baseTableName: solutions
+            baseColumnNames: sender_id
+            referencedTableName: account
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            constraintName: fk_solution__problem
+            baseTableName: solutions
+            baseColumnNames: problem_id
+            referencedTableName: problem
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_solution__solution_status
+            baseTableName: solutions
+            baseColumnNames: status_id
+            referencedTableName: solution_status
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+  ##################################################################
+  # 8. external_solution
+  ##################################################################
+  - changeSet:
+      id: 8
+      author: ion
+      changes:
+        - createTable:
+            tableName: external_solution
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_external_solution
+              - column:
+                  name: callback_url
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: callback_secret
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: solution_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_external_solution__solution
+            baseTableName: external_solution
+            baseColumnNames: solution_id
+            referencedTableName: solutions
+            referencedColumnNames: id

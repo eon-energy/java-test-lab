@@ -1,0 +1,158 @@
+databaseChangeLog:
+  ##################################################################
+  # 1. role
+  ##################################################################
+  - changeSet:
+      id: 1-insert-roles
+      author: ion
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: USER
+
+  ##################################################################
+  # 2. solution_status
+  ##################################################################
+  - changeSet:
+      id: 2-insert-solution-status
+      author: ion
+      changes:
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: SUBMITTED
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: QUEUED
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: PROCESSING
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: ACCEPTED
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: WRONG_ANSWER
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: TIME_LIMIT
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: RUNTIME_ERROR
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: COMPILATION_ERROR
+        - insert:
+            tableName: solution_status
+            columns:
+              - column:
+                  name: code
+                  value: INTERNAL_ERROR
+
+  ##################################################################
+  # 3. difficulty_level
+  ##################################################################
+  - changeSet:
+      id: 3-insert-difficulty-level
+      author: ion
+      changes:
+        - insert:
+            tableName: difficulty_level
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: EASY
+        - insert:
+            tableName: difficulty_level
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: MEDIUM
+        - insert:
+            tableName: difficulty_level
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: name
+                  value: HARD
+
+  ##################################################################
+  # 4. difficulty_level_style
+  ##################################################################
+  - changeSet:
+      id: 4-insert-difficulty-level-style
+      author: ion
+      changes:
+        - insert:
+            tableName: difficulty_level_style
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: color
+                  value: "#28a745"
+              - column:
+                  name: level_id
+                  valueNumeric: 1
+        - insert:
+            tableName: difficulty_level_style
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: color
+                  value: "#ffc107"
+              - column:
+                  name: level_id
+                  valueNumeric: 2
+        - insert:
+            tableName: difficulty_level_style
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: color
+                  value: "#dc3545"
+              - column:
+                  name: level_id
+                  valueNumeric: 3
